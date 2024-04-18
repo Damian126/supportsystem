@@ -1,0 +1,130 @@
+https://prnt.sc/jUnGY5QxxT90
+https://prnt.sc/fBS6ulUIDT8l
+https://prnt.sc/5Ev5FQ1Hqff3
+
+
+
+sudo apt update
+sudo apt install mysql-server
+Press Y if it asks for confirmation!
+
+sudo mysql
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'SDsd123!';
+FLUSH PRIVILEGES;
+source supportsystem/install.sql;
+exit
+sudo curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
+Then disconnect from your VPS and reconnect to it! This can be done by simply closing the SSH session and re-opening it!
+
+Then, run the below commands!
+
+nvm install 16.13.2
+
+nvm use node
+
+screen -S supportsystem
+
+cd supportsystem
+npm i
+
+node .
+
+
+SETUP up for running it on domain 
+
+
+Lets make sure we are up to date, so lets run sudo apt update in console.
+
+Then let's get to installing NGINX with this command:
+
+sudo apt install nginx
+
+When prompted press Y to install Nginx.
+
+Now you should be able to navigate to your server IP in a browser and you will see the Nginx welcome page - http://server_domain_or_IP.
+
+MySQL
+If your current EJS website doesn't require a MySQL Database, feel free to skip ahead!
+
+Start off by running this command to install the base of MySQL:
+
+sudo apt install mysql-server
+
+When prompted press Y to install MySQL-Server.
+
+Then lets login to MySQL:
+
+sudo mysql
+
+Then, lets set a password for your new MySQL Server!
+
+mysqlALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password';
+Next lets make sure to refresh our permissions.
+
+FLUSH PRIVILEGES;
+If you wish to learn MORE about MySQL x Ubuntu feel free to check out the knowledge base article.
+
+Install NodeJS
+Install NVM
+sudo apt update
+sudo curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
+then run this all in one line
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
+
+then continue running these commands below
+
+nvm --version
+nvm ls
+nvm install 16.13.2
+nvm use node
+to set the default simply do
+
+nvm alias default 16.13.2
+(Those of you looking for a windows download go here.)
+
+Certbot
+Lastly we need to install Certbot to be able to use SSL certificates on our domain(s).
+
+sudo apt install certbot python3-certbot-nginx
+NGINX Configuration
+Credit to FAXES on this part.
+
+Because EJS Websites use NodeJS to function we need to setup a proxy to have our website work on a domain through NGINX. Navigate to your NGINX site config: /etc/nginx/sites-available/default
+
+Insert the below into your config file. Ensure to edit the relevant points. If this is your first time editing this file, you may feel free to delete all other content inside of it, so you start blank before pasting this in.
+
+server {
+    
+  server_name example.com; # Change domain to yours.
+    
+  location / {
+    proxy_pass http://localhost:3000; # Change the port if changed in the config file.
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection 'upgrade';
+    proxy_set_header Host $host;
+    proxy_cache_bypass $http_upgrade;
+    proxy_set_header X-Real-IP $remote_addr;
+  }    
+}
+Restart Nginx to make the changes.
+
+sudo systemctl restart nginx
+Now create a SSL certificate through Certbot.
+
+sudo certbot --nginx -d example.com
+If instructed you want to pick the second option (2) to redirect all traffic to a https connection.
+
+Run sudo certbot renew --dry-run to make sure your SSL certificates auto-renew.
+
+Running your website
+Now, let's actually install dependencies and start your website on the port of your choice!
+
+cd to the directory of your website, for example: cd /home/website
+
+Next, lets install the dependencies, for me, that will be done with npm i
+
+Once the dependencies have finished installing, finally, let's start the website with node .
